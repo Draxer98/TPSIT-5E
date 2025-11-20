@@ -6,9 +6,9 @@
 #include <string.h>     //funz. stringhe
 #include <errno.h>      //gestioni errori connessione
 #include <ctype.h>      //bind
-#include <unistd.h>     // file header che consente l'accesso alle API dello standard POSIX
+#include <unistd.h>     //ile header che consente l'accesso alle API dello standard POSIX
 
-#define Serverport 1450
+#define Serverport 6969
 
 int main()
 {
@@ -32,7 +32,7 @@ int main()
     };
     char stringa[20];
     char inizioTaxi[20] = "Taxi acquistato";
-    char fineTaxi[30] = "Serizio terminato!";
+    char fineTaxi[30] = "Servizio terminato!";
     int socketfd, soa, fromlen = sizeof(servizio);
 
     socketfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -45,7 +45,7 @@ int main()
         fflush(stdout);
         soa = accept(socketfd, (struct sockaddr *)&servizio, &fromlen);
 
-        if (cont == sizeof(taxi) / sizeof(taxi[0]))
+        if (cont == 10)
         {
             write(soa, fineTaxi, sizeof(fineTaxi));
         }
