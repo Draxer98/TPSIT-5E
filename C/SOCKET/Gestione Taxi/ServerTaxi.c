@@ -12,6 +12,7 @@
 
 int main()
 {
+    int cont = 0;
     struct sockaddr_in servizio;
     servizio.sin_family = AF_INET;
     servizio.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -31,7 +32,7 @@ int main()
     };
     char stringa[20];
     char inizioTaxi[20] = "Taxi acquistato";
-    char fineTaxi[30] = "Serizio terminato, grazie!";
+    char fineTaxi[30] = "Serizio terminato!";
     int socketfd, soa, fromlen = sizeof(servizio);
 
     socketfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -43,24 +44,37 @@ int main()
         printf("Server in ascolto.... \n");
         fflush(stdout);
         soa = accept(socketfd, (struct sockaddr *)&servizio, &fromlen);
-        int n = read(soa, stringa, sizeof(stringa) - 1);
-        if (n > 0)
-        {
-            stringa[n] = '\0';
-            printf("Richiesta: %s\n", stringa);
-        }
-        for (int i = 0; i < sizeof(taxi) / sizeof(taxi[0]); i++)
-        {
-            if (taxi[i] == 0)
-            {
-                taxi[i] = 1;
 
-                write(soa, inizioTaxi, strlen(inizioTaxi));
-                write(soa, fineTaxi, strlen(inizioTaxi));
-                taxi[i] = 0;
-                break;
+        if (cont == sizeof(taxi) / sizeof(taxi[0]))
+        {
+            write(soa, fineTaxi, sizeof(fineTaxi));
+        }
+        else
+        {
+            int n = read(soa, stringa, sizeof(stringa) - 1);
+            if (n > 0)
+            {
+                stringa[n] = '\0';
+                printf("Richiesta: %s\n", stringa);
+            }
+            for (int i = 0; i < sizeof(taxi) / sizeof(taxi[0]); i++)
+            {
+                if (cont == sizeof(taxi) / sizeof(taxi[0]))
+                {
+                    write(soa, fineTaxi, sizeof(fineTaxi));
+                }
+                else if (taxi[i] == 0)
+                {
+                    taxi[i] = 1;
+
+                    write(soa, inizioTaxi, strlen(inizioTaxi));
+                    break;
+                }
+
+                cont++;
             }
         }
+
         close(soa);
     }
 }
