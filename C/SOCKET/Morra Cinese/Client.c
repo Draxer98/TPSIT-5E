@@ -9,14 +9,13 @@
 #include <unistd.h>     // file header che consente l'accesso alle API dello standard POSIX
 #include <arpa/inet.h>  
 
-#define SERVERPORT 1450
+#define SERVERPORT 6967
 
 int main()
 {
     struct sockaddr_in servizio;
     servizio.sin_family = AF_INET;
-    servizio.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    servizio.sin_port = htonl(SERVERPORT);
+    servizio.sin_port = htons(SERVERPORT);
 
     char scelta[13] = "";
     char punteggio[100];
@@ -28,7 +27,7 @@ int main()
         return -1;
     }
 
-    if(inet_pton(AF_INET, "26.249.73.119", &servizio.sin_addr) <= 0)
+    if(inet_pton(AF_INET, "192.168.60.174", &servizio.sin_addr) <= 0)
     {
         perror("Errore conversione indirizzo IP");
         close(socketfd);
@@ -38,6 +37,7 @@ int main()
     if (connect(socketfd, (struct sockaddr*)&servizio, sizeof(servizio)) < 0)
     {
         perror("Connessione col server fallita");
+        close(socketfd);
         return -1;
     }
 
@@ -45,13 +45,13 @@ int main()
     {
         printf("Inserisci una fra le seguenti: \n");
         printf("FORBICE | SASSO | CARTA \n");
-        printf("FINE per terminare");
+        printf("EXIT per terminare \n");
         fgets(scelta, sizeof(scelta), stdin);
 
         write(socketfd, scelta, strlen(scelta));
-        read(socketfd, punteggio, strlen(punteggio));
-        printf("%s", punteggio);
-        if (strcmp(scelta, "FINE") == 0)
+        read(socketfd, punteggio, sizeof(punteggio));
+        printf("%s \n", punteggio);
+        if (strcmp(scelta, "EXIT") == 0)
         {
             break;
         }
